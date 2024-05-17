@@ -20,6 +20,8 @@
   ]
 ]
 
+Player = AddressOf([].Characters.Jacques)
+
 [Rooms
   {AllRoomsAction
     [
@@ -28,15 +30,15 @@
   }
   [Hall
     Description = [Text($,Text)
-      Me voilà dans le hall, moi $([].Player.Name), le grand detective.
+      Me voilà dans le hall, moi $([].Player->Name), le grand detective.
       En face de moi, le reste du monde.
     Text]
     {Actions
       [
-        Command = "shoot"
+        Command = "tirer", "faire feu"
         Condition() = "gun" in [].Player.Inventory && [].Player.Ammo > 0
         Failed() = [Function
-          If [].Player.Ammo > 0 Then
+          If [].Player.Ammo > 0
             "Je n'ai pas mon arme sur moi."
           Else
             "Je n'ai plus de munitions."
@@ -44,8 +46,8 @@
         ]
         Passed() = [Function
           "Un grand 'BAM' se fait entendre."
-          If [].Player.Ammo -= 1 Then
-            "Il me reste encore ", [].Player.Ammo, " munition", [].Player.Ammo > 1 ? "s", ""
+          If [].Player.Ammo -= 1
+            "Il me reste encore ", [].Player.Ammo, " munition", [].Player.Ammo > 1 ? "s" : "", "."
           Else
             "C'était ma dernière cartouche."
           EndIf
