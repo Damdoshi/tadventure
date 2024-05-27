@@ -1,0 +1,124 @@
+#!/home/damdoshi/tadventure/tadventure
+
+[*
+** In shell mode, texts can use symbols to put some change in how they look.
+**   # to increase brightess
+**   * to increase boldness
+**   = to turn text red, or cancel current color
+**   @ for green or cancel current color
+**   ~ for yellow or cancel...
+**   ^ for blue ...
+**   % for magenta ...
+**   & for teal ...
+** How it works? Here is an example:
+** *Hello* ! I am $Damdoshi$ and #*%very%*# happy to be here!
+** The \ symbol means newline.
+** The / symbol means tabulation.
+** Raw \n and \t are automatically removed in most texts to allow you
+** to use them in source code to improve readability.
+*]
+
+[Graphics
+  Resolution = 800, 600
+  FullScreen = false
+]
+
+[GeneralProperties
+  Title = "Test program"
+  TitleScreen = @"pic/title_screen.txt"
+  DefaultDisplay = "shell"
+  DisplayClock = true
+  Day = 1
+  Hour = 14
+  Minute = 30
+  Second = 0
+]
+
+[World
+]
+
+[Characters
+  [Jacques
+    Name = "Jacques Baqueslache"
+    Room = AddressOf([].Rooms.Hall)
+    Ammo = 3
+    {DontKnow
+      "Je ne sais pas ce que \"%s\" veut dire...",
+      "Mais encore? \"%s\"? Soyons sérieux..."
+    }
+    {Inventory
+      "Gun"
+    }
+  ]
+]
+
+CurrentCharacter = AddressOf([].Characters.Jacques)
+
+GlobalTimePass(int v) = [Function
+  With [].GeneralProperties
+    Second += v * 10
+    If Second >= 60
+      Second -= 60
+      Minute += 1
+      If Minute >= 60
+        Minute -= 60
+        Hour += 1
+        If Hour >= 24
+          Hour -= 24
+          Day += 1
+        EndIf
+      EndIf
+    EndIf
+    "Jour ", Day, ", Heure ", Hour, ", Minute ", Minute, ", Seconde ", Second
+  EndWith
+  Return 0
+]
+
+[Rooms
+  {AllRoomsAction
+    [
+      Command = "fumer"
+      Condition() = "Cigarette" in CurrentPlayer->Inventory
+    ]
+  }
+  [Hall
+    Name = "*Hall*"
+    TimePass(integer v) = [].GlobalTimePass(v)
+    Background = "Black", "Bright"
+    Picture = @"pic/panel1.txt"
+    Description = [Text($,Text)
+      Me voilà dans le hall, moi, *=$(CurrentCharacter->Name)=*,
+      le grand detective...
+      En face de moi, le reste du monde!
+    Text]
+    {Actions
+      [
+        Command = "tirer", "faire feu"
+        Condition() = "Gun" in CurrentCharacter->Inventory && CurrentCharacter->Ammo > 0
+        Failed() = [Function
+          If CurrentCharacter->Ammo > 0
+            "Je n'ai pas mon arme sur moi."
+          Else
+            "Je n'ai plus de munitions."
+          EndIf
+        ]
+        Passed() = [Function
+          "Un grand 'BAM' se fait entendre."
+          If CurrentCharacter->Ammo -= 1
+            "Il me reste encore ", CurrentCharacter->Ammo, " munition", CurrentCharacter->Ammo > 1 ? "s" : "", "."
+          Else
+            "C'était ma dernière cartouche."
+          EndIf
+        ]
+      ]
+    }
+  ]
+]
+
+[Items
+  [Gun
+    Name = "Pistolet"
+    Description = "Un six-coup digne de Lucky Luke"
+  ]
+]
+
