@@ -41,37 +41,60 @@
   [Jacques
     Name = "Jacques Baqueslache"
     Room = AddressOf([].Rooms.Hall)
-    Ammo = 3
+    Addiction = 0
+    Anger = 0
+    MinutePass(integer tmp) = [Function
+      integer i
+
+      For i = 0 To i < tmp Step i += 1
+        Addiction += 1
+        If Addiction >= 10
+          Addiction -= 5
+          Anger += 1
+        ElseIf Addiction < 5
+          Anger -= 5
+          If Anger < 0 Then Anger = 0
+        EndIf
+      Next
+      If Addiction > 5 Then "J'ai envie de fumer!"
+      If Addiction > 10 Then "Je suis en manque, ca m'enerve!"
+    ]
     {DontKnow
       "Je ne sais pas ce que \"%s\" veut dire...",
       "Mais encore? \"%s\"? Soyons sérieux..."
     }
-    {Inventory
-      "Gun"
-    }
+    [Inventory
+      Gun
+      Ammo = 3
+    ]
   ]
 ]
 
 CurrentCharacter = AddressOf([].Characters.Jacques)
 
 GlobalTimePass(int v) = [Function
+  integer tmp
+  
   With [].GeneralProperties
     Second += v * 10
     If Second >= 60
-      Second -= 60
-      Minute += 1
+      tmp = Second / 60
+      Minute += tmp
+      Second = Second % 60
+      CurrentCharacter->MinutePass(tmp)
       If Minute >= 60
-        Minute -= 60
-        Hour += 1
+        tmp = Minute / 60
+        Hour += tmp
+        Minute = Minute % 60
         If Hour >= 24
-          Hour -= 24
-          Day += 1
+          tmp = Hour / 24
+          Day += tmp
+          Hour = Hour % 24
         EndIf
       EndIf
     EndIf
     "Jour ", Day, ", Heure ", Hour, ", Minute ", Minute, ", Seconde ", Second
   EndWith
-  Return 0
 ]
 
 [Rooms
@@ -79,6 +102,23 @@ GlobalTimePass(int v) = [Function
     [
       Command = "fumer"
       Condition() = "Cigarette" in CurrentPlayer->Inventory
+      Failed() = [Function
+        "J'en ai plus une seule à griller."
+      ]
+      Passed() = [Function
+        If CurrentCharacter->Addiction < 5
+          "Je pense que j'aurai pu m'en passer de celle-là."
+        Else
+          "Celle-là, je l'attendais..."
+        EndIf
+        CurrentCharacter->Addiction = 0
+        CurrentPlayer->Inventory.Cigarette -= 1
+        If CurrentPlayer->Inventory.Cigarette > 0
+          "J'en ai encore ", CurrentPlayer->Inventory.Cigarette, " pour plus tard."
+        Else
+          "C'était la dernière."
+        EndIf
+      ]
     ]
   }
   [Hall
@@ -94,9 +134,9 @@ GlobalTimePass(int v) = [Function
     {Actions
       [
         Command = "tirer", "faire feu"
-        Condition() = "Gun" in CurrentCharacter->Inventory && CurrentCharacter->Ammo > 0
+        Condition() = "Gun" in CurrentCharacter->Inventory && "Ammo" in CurrentCharacter->Inventory && CurrentCharacter->Inventory.Ammo > 0
         Failed() = [Function
-          If CurrentCharacter->Ammo > 0
+          If CurrentCharacter->Inventory.Ammo > 0
             "Je n'ai pas mon arme sur moi."
           Else
             "Je n'ai plus de munitions."
@@ -104,8 +144,8 @@ GlobalTimePass(int v) = [Function
         ]
         Passed() = [Function
           "Un grand 'BAM' se fait entendre."
-          If CurrentCharacter->Ammo -= 1
-            "Il me reste encore ", CurrentCharacter->Ammo, " munition", CurrentCharacter->Ammo > 1 ? "s" : "", "."
+          If CurrentCharacter->Inventory.Ammo -= 1
+            "Il me reste encore ", CurrentCharacter->Inventory.Ammo, " munition", CurrentCharacter->Inventory.Ammo > 1 ? "s" : "", "."
           Else
             "C'était ma dernière cartouche."
           EndIf
