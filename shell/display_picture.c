@@ -21,13 +21,13 @@ static bool	_shell_display_picture(t_program	*prog,
   for (w = 0; pic[w] && pic[w] != '\n'; ++w);
   if (pic[w] != '\n')
     {
-      fprintf(stderr, "Script error: Invalid picture format in %s.\n", file);
+      error("Script error: Invalid picture format in %s.\n", file);
       return (false);
     }
   w += 1;
   if ((len = strlen(pic)) % w != 0)
     {
-      fprintf(stderr, "Script error: Irregular picture format in %s.\n", file);
+      error("Script error: Irregular picture format in %s.\n", file);
       return (false);
     }
   if (w < prog->term_size.x)

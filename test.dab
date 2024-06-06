@@ -1,0 +1,11 @@
+
+[Characters
+  [Jacques
+    Val = 2
+  ]
+]
+CurrentCharacter = AddressOf([].Characters.Jacques)
+
+'Condition(int c, node v) = "Jacques" == NameOf(@CurrentCharacter)
+Condition(int c, node v) = NameOf(@CurrentCharacter) == "Jacques"
+

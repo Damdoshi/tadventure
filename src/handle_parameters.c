@@ -20,7 +20,7 @@ bool			handle_parameters(int		argc,
     {
       if (prog->configuration_files_nbr >= NBRCELL(prog->configuration_files))
 	{
-	  fprintf(stderr, "Too many game files. Maximum is %d.\n", NBRCELL(prog->configuration_files));
+	  error("Too many game files. Maximum is %d.\n", NBRCELL(prog->configuration_files));
 	  return (help());
 	}
       prog->configuration_files[prog->configuration_files_nbr++] = argv[0];
@@ -37,7 +37,7 @@ bool			handle_parameters(int		argc,
 	prog->display_mode = -1;
       else
 	{
-	  fprintf(stderr, "Unsupported display mode '%s'.\n", &argv[0][10]);
+	  error("Unsupported display mode '%s'.\n", &argv[0][10]);
 	  return (help());
 	}
     }

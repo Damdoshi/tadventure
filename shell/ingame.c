@@ -48,11 +48,20 @@ bool			shell_ingame(t_program		*prog)
   shell_separator(prog, '`');
   if (rd == 0)
     return (true);
+  if (ingame_reword_command(prog, buffer) == false)
+    return (-1);
   if ((split = bunny_split(&buffer[0], toks, true)) == NULL)
     {
       bunny_perror("split");
       return (false);
     }
+  if (split[0] == NULL || *split[0] == '\0')
+    {
+      bunny_delete_split(split);
+      return (true);
+    }
+  if (ingame_time_pass(prog) == -1)
+    return (-1);
   for (rd = 0; rd < NBRCELL(commands); ++rd)
     if (leftmatch(buffer, commands[rd].command))
       {
@@ -60,8 +69,6 @@ bool			shell_ingame(t_program		*prog)
 	bunny_delete_split(split);
 	return (ret);
       }
-  if (split == NULL || split[0] == NULL || *split[0] == '\0')
-    return (true);
   prog->game_changed = true;
   ret = ingame_handle_action(prog, wtlen(split), split);
   bunny_delete_split(split);

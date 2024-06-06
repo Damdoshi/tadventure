@@ -18,7 +18,7 @@ int			ingame_dont_know(t_program	*program,
     (program->configuration, "[].CurrentCharacter->DontKnow");
   if (!bunny_configuration_getf
       (program->configuration, &str,
-       "[].CurrentCharacter->DontKnow[%d]", rand() % nbr)
+       "CurrentCharacter->DontKnow[%d]", rand() % nbr)
       )
     {
       printfall(program, "?\n");
@@ -31,12 +31,12 @@ int			ingame_dont_know(t_program	*program,
       {
 	if (str[nbr + 1] != 's')
 	  {
-	    fprintf(stderr, "Script error: Invalid token in '%s'. Only a single %%s is supported.\n", str);
+	    error("Script error: Invalid token in '%s'. Only a single %%s is supported.\n", str);
 	    return (-1);
 	  }
 	if ((spec += 1) > 1)
 	  {
-	    fprintf(stderr, "Script error: Too many string token in '%s'.\n", str);
+	    error("Script error: Too many string token in '%s'.\n", str);
 	    return (-1);
 	  }
       }

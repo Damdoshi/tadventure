@@ -9,7 +9,7 @@
 #include		<signal.h>
 #include		"tadventure.h"
 
-static t_program	program = {
+t_program		program = {
   .display_mode = DDEFAULT,
   .title = "TAdventure Game",
   .klondike = KMENU,
@@ -66,7 +66,7 @@ int			main(int		argc,
 	program.display_mode = DGRAPHICS;
       else
 	{
-	  fprintf(stderr, "Script error: Unsupported display mode '%s'.\n", str);
+	  error("Script error: Unsupported display mode '%s'.\n", str);
 	  return (help());
 	}
     }

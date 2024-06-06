@@ -15,9 +15,9 @@ t_bunny_configuration	*ingame_get_room(t_program	*prog,
 
   if (name == NULL)
     {
-      if (!bunny_configuration_getf(prog->configuration, &cnf, "*[].CurrentCharacter"))
+      if (!bunny_configuration_getf(prog->configuration, &cnf, "@[].CurrentCharacter"))
 	{
-	  printfall(prog, "Unexpected error: Cannot retrieve current character.\n");
+	  error("Unexpected error: Cannot retrieve current character.\n");
 	  return (NULL);
 	}
       name = bunny_configuration_get_name(cnf);
@@ -26,14 +26,14 @@ t_bunny_configuration	*ingame_get_room(t_program	*prog,
     {
       if (!bunny_configuration_getf(prog->configuration, &cnf, "[].Characters.%s", name))
 	{
-	  printfall(prog, "Unexpected error: Cannot find character '%s'.\n", name);
+	  error("Unexpected error: Cannot find character '%s'.\n", name);
 	  return (NULL);
 	}
     }
 
-  if (!bunny_configuration_getf(cnf, &cnf, "*Room"))
+  if (!bunny_configuration_getf(cnf, &cnf, "@Room"))
     {
-      printfall(prog, "Script error: Cannot retrieve character '%s' room.\n", name);
+      error("Script error: Cannot retrieve character '%s' room.\n", name);
       return (NULL);
     }
   return (cnf);

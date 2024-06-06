@@ -32,7 +32,7 @@ int			screen_mode(t_program		*program)
 
   if (bunny_position_configuration("", &wsize, program->configuration) == BD_ERROR)
     {
-      fprintf(stderr, "Invalid resolution.\n");
+      error("Invalid resolution.\n");
       return (EXIT_FAILURE);
     }
   bunny_configuration_getf(program->configuration, &fullscreen, "Graphics.FullScreen");

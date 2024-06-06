@@ -45,6 +45,7 @@ typedef struct			s_program
   // Software props
   const char			*configuration_files[128];
   size_t			configuration_files_nbr;
+  const char			*language;
   t_bunny_configuration		*configuration;
   t_bunny_configuration		*parameters;
   t_display			display_mode;
@@ -77,6 +78,9 @@ bool				handle_parameters(int		argc,
 bool				load_game(t_program		*prog);
 int				help(void);
 
+void				error(const char		*pattern,
+				      ...)
+  __attribute__ ((format (printf, 1, 2)));
 bool				printfall(t_program		*program,
 					  const char		*pattern,
 					  ...)
@@ -113,7 +117,19 @@ bool				ingame_try_execute_action(t_program *program,
 							  t_bunny_configuration	*action,
 							  int argc,
 							  const char * const *argv);
+int				ingame_time_pass(t_program	*program);
 
 bool				rebind_variables(t_program	*prog);
+
+bool				ingame_reword_command(t_program	*prog,
+						      char	*cmd);
+
+const char			*language(t_program		*prog,
+					  const char		*str);
+const char			*string(t_program		*prog,
+					const char		*pattern,
+					...);
+
+int				randint(void);
 
 #endif	/*			__TADVENTURE_H__		*/

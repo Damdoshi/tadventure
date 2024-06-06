@@ -26,7 +26,7 @@ int			ingame_test_command(int			argc,
   if (spt[0] == NULL)
     {
       bunny_delete_split(spt);
-      fprintf(stderr, "Script error: command %s is invalid.\n", cmd_addr);
+      error("Script error: command %s is invalid.\n", cmd_addr);
       return (-1);
     }
   for (i = 0; spt[i] && i < argc; ++i)

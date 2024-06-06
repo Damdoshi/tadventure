@@ -49,7 +49,10 @@ bool			shell_ingame_look_command(t_program		*prog,
 	{
 	  char		dbuffer[128];
 
-	  snprintf(dbuffer, sizeof(dbuffer), "#*%d %d:%d*#", prog->day, prog->hour, prog->minute);  
+	  snprintf(dbuffer, sizeof(dbuffer), "#*%s %d %d:%d - %s*#",
+		   language(prog, "Day"), prog->day, prog->hour, prog->minute,
+		   string(prog, "CurrentCharacter->Name")
+		   );
 	  printfall(prog, "%*s  ", (int)floor(prog->term_size.x / 2) - 2, &dbuffer[0]);
 	  fline = true;
 	}

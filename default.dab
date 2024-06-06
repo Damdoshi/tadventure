@@ -18,12 +18,15 @@
 ** to use them in source code to improve readability.
 *]
 
+@include "tadventure.dab"
+
 [Graphics
   Resolution = 800, 600
   FullScreen = false
 ]
 
 [GeneralProperties
+  Language = "FR"
   Title = "Test program"
   TitleScreen = @"pic/title_screen.txt"
   DefaultDisplay = "shell"
@@ -32,6 +35,9 @@
   Hour = 14
   Minute = 30
   Second = 0
+  {RemovedWord
+    "la", "vers", "dans", "de", "a", "le"
+  }
 ]
 
 [World
@@ -40,7 +46,7 @@
 [Characters
   [Jacques
     Name = "Jacques Baqueslache"
-    Room = AddressOf([].Rooms.Hall)
+    Room = AddressOf([].Rooms.SalleAttente)
     Addiction = 0
     Anger = 0
     MinutePass(integer tmp) = [Function
@@ -59,9 +65,33 @@
       If Addiction > 5 Then "J'ai envie de fumer!"
       If Addiction > 10 Then "Je suis en manque, ca m'enerve!"
     ]
+    [Actions
+      [Smoke
+        Command = "fumer"
+        Condition(int c, node v) = "Cigarette" in CurrentPlayer->Inventory
+        Failed(int c, node v) = [Function
+          "J'en ai plus une seule à griller."
+        ]
+        Passed(int c, node v) = [Function
+          If CurrentCharacter->Addiction < 5
+            "Je pense que j'aurai pu m'en passer de celle-là."
+          Else
+            "Celle-là, je l'attendais..."
+          EndIf
+          CurrentCharacter->Addiction = 0
+          CurrentPlayer->Inventory.Cigarette -= 1
+          If CurrentPlayer->Inventory.Cigarette > 0
+            "J'en ai encore ", CurrentPlayer->Inventory.Cigarette, " pour plus tard."
+          Else
+            "C'était la dernière."
+          EndIf
+        ]
+      ] 
+    ]
     {DontKnow
       "Je ne sais pas ce que \"%s\" veut dire...",
-      "Mais encore? \"%s\"? Soyons sérieux..."
+      "Mais encore? \"%s\"? Soyons sérieux...",
+      "Peut-être qu'en français, je comprendrai mieux, c'est quoi \"%s\"?!"
     }
     [Inventory
       Gun
@@ -74,7 +104,8 @@ CurrentCharacter = AddressOf([].Characters.Jacques)
 
 GlobalTimePass(int v) = [Function
   integer tmp
-  
+
+  [].CurrentCharacter = ""
   With [].GeneralProperties
     Second += v * 10
     If Second >= 60
@@ -93,56 +124,53 @@ GlobalTimePass(int v) = [Function
         EndIf
       EndIf
     EndIf
-    "Jour ", Day, ", Heure ", Hour, ", Minute ", Minute, ", Seconde ", Second
   EndWith
 ]
 
 [Rooms
-  {AllRoomsAction
-    [
-      Command = "fumer"
-      Condition() = "Cigarette" in CurrentPlayer->Inventory
-      Failed() = [Function
-        "J'en ai plus une seule à griller."
+  [AllRoomsAction
+    [Sing
+      Command = "chantonner"
+      Condition(int c, node v) = CurrentPlayer->Anger == 0
+      Failed(int c, node v) = [Function
+        "Je suis vraiment pas d'humeur à ça."
       ]
-      Passed() = [Function
-        If CurrentCharacter->Addiction < 5
-          "Je pense que j'aurai pu m'en passer de celle-là."
+      Passed(int c, node v) = [Function
+        If c == 0 || v[0] == "navire"
+          "Il était un petit navir..e."
+          "Il était un petit navir..e."
+          "Qui n'avais ja, ja, jamais navigué, ohé ohé!"
+        ElseIf v[0] == "jacques"
+          "Frere Jacques..."
+          "Dormez vous?"
+          "Sonnez les matines!"
         Else
-          "Celle-là, je l'attendais..."
-        EndIf
-        CurrentCharacter->Addiction = 0
-        CurrentPlayer->Inventory.Cigarette -= 1
-        If CurrentPlayer->Inventory.Cigarette > 0
-          "J'en ai encore ", CurrentPlayer->Inventory.Cigarette, " pour plus tard."
-        Else
-          "C'était la dernière."
+          "Je ne connais pas de chanson qui s'appelle ", v[0]
         EndIf
       ]
     ]
-  }
-  [Hall
-    Name = "*Hall*"
+  ]
+  [SalleDeTir
+    Name = "*Salle de tir*"
     TimePass(integer v) = [].GlobalTimePass(v)
     Background = "Black", "Bright"
     Picture = @"pic/panel1.txt"
     Description = [Text($,Text)
-      Me voilà dans le hall, moi, *=$(CurrentCharacter->Name)=*,
+      Me voilà dans la salle de tir, moi, *=$(CurrentCharacter->Name)=*,
       le grand detective...
-      En face de moi, le reste du monde!
     Text]
-    {Actions
-      [
+    [Actions
+      [Fire
         Command = "tirer", "faire feu"
-        Condition() = "Gun" in CurrentCharacter->Inventory && "Ammo" in CurrentCharacter->Inventory && CurrentCharacter->Inventory.Ammo > 0
-        Failed() = [Function
+        Condition(int c, node v) = "Gun" in CurrentCharacter->Inventory && "Ammo" in CurrentCharacter->Inventory && CurrentCharacter->Inventory.Ammo > 0
+        Failed(int c, node v) = [Function
           If CurrentCharacter->Inventory.Ammo > 0
             "Je n'ai pas mon arme sur moi."
           Else
             "Je n'ai plus de munitions."
           EndIf
         ]
-        Passed() = [Function
+        Passed(int c, node v) = [Function
           "Un grand 'BAM' se fait entendre."
           If CurrentCharacter->Inventory.Ammo -= 1
             "Il me reste encore ", CurrentCharacter->Inventory.Ammo, " munition", CurrentCharacter->Inventory.Ammo > 1 ? "s" : "", "."
@@ -151,7 +179,70 @@ GlobalTimePass(int v) = [Function
           EndIf
         ]
       ]
-    }
+    ]
+  ]
+  [SalleAttente
+    Name = "*Salle d'attente*"
+    TimePass(integer v) = [Function
+      [].GlobalTimePass(v)
+    ]
+    Door = false
+    Description = [Text($,Text)
+      La salle d'attente. La porte mène à la salle de tir.
+      La porte est $([#SalleAttente].Door ? "ouverte" : "fermée").
+    Text]
+    [Actions
+      [Open
+        Command = "ouvrir"
+        Target = "porte"
+        Condition(int c, node v) = c > 0 && v[0] in Target
+        Failed(int c, node v) = Print("Ouvrir *quoi*?!")
+        Passed(int c, node v) = [Function
+          If [#SalleAttente].Door
+            "La porte est déjà ouverte."
+          Else
+            [#SalleAttente].Door = true
+          EndIf
+        ]
+      ]
+      [Close
+        Command = "fermer"
+        Target = "porte"
+        Condition(int c, node v) = c > 0 && v[0] in Target
+        Failed(int c, node v) = Print("Fermer *quoi*?!")
+        Passed(int c, node v) = [Function
+          If [#SalleAttente].Door == false
+            "La porte est déjà fermée."
+          Else
+            [#SalleAttente].Door = false
+          EndIf
+        ]
+      ]
+      [Go
+        Command = "aller"
+        Target = "porte", "salle"
+        Condition(int c, node v) = c > 0 && v[0] in Target
+        Failed(int c, node v) = [Function
+          integer i
+
+          For i = 0 to i < NbrCase([#Go].Target) Step i += 1
+              "", [#Go].Target[i] ' i est innaccessible
+          Next
+          If c == 0
+            "Aller *où*?"
+          Else
+            "Je ne vois pas où c'est."
+          EndIf
+        ]
+        Passed(int c, node v) = [Function
+          If [#SalleAttente].Door
+            [].Move(CurrentCharacter, "SalleDeTir")
+          Else
+            "La porte est fermée."
+          EndIf
+        ]
+      ]
+    ]
   ]
 ]
 
@@ -159,6 +250,43 @@ GlobalTimePass(int v) = [Function
   [Gun
     Name = "Pistolet"
     Description = "Un six-coup digne de Lucky Luke"
+    [Actions
+      [Fire
+        Command = "tirer", "faire feu"
+        Condition(int c, node v) = "Gun" in CurrentCharacter->Inventory && "Ammo" in CurrentCharacter->Inventory && CurrentCharacter->Inventory.Ammo > 0
+        Failed(int c, node v) = [Function
+          If "Gun" out CurrentCharacter->Inventory
+            "N'importe quoi. Tirer? Ici? De toute manière je n'ai pas d'arme."
+          ElseIf "Ammo" out CurrentCharacter->Inventory
+            "N'importe quoi. Tirer? Ici? De toute manière je n'ai pas de munitions."
+          Else
+            "N'importe quoi. Tirer? Ici? De toute manière je n'ai plus de munitions."
+          EndIf
+        ]
+        Passed(int c, node v) = [Function
+          "Non, mais, ca va pas ?! Je vais pas tirer comme ca, n'importe ou!"
+        ]
+      ]
+    ]
+  ]
+  [Ammo
+    Name = "Munitions"
+    Description = "Des balles pour une arme à feu. J'en ai %s."
+  ]
+  [Cigarette
+    Name = "Cigarette"
+    Description = "Un paquet de mini-cancer."
+    [Actions
+      [Smoke
+        Command = "fumer"
+        Condition(int c, node v) = NameOf(@CurrentCharacter) == "Jacques"
+        Failed(int c, node v) = [Function
+          "Je ne fume pas."
+        ]
+        Passed(int c, node v) = [Function
+          TryAction(CurrentCharacter->Actions.Smoke(c, v))
+        ]
+      ]
+    ]
   ]
 ]
-

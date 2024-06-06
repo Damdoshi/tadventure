@@ -2,7 +2,7 @@
 # All duties reserved
 
 all:
-	bcc -I./include/ -Wextra -Wall -g -g3 -ggdb `find . -name "*.c"` -o tadventure
+	bcc -I./include/ -fPIC -rdynamic -Wextra -Wall -g -g3 -ggdb `find . -name "*.c"` -o tadventure
 clean:
 	find . -name "*~" -delete
 fclean:

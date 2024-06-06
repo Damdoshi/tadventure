@@ -1,0 +1,4 @@
+ARTIF, c'est le noeud contenant la fonction
+LOCAL, c'est les variables locales
+PARAMS, les paramètres
+ROOT, la racine

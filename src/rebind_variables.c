@@ -14,7 +14,7 @@ bool			rebind_variables(t_program		*prog)
 
   if (!bunny_configuration_getf(prog->configuration, &gp, "GeneralProperties"))
     {
-      fprintf(stderr, "Script error: GeneralProperties missing.\n");
+      error("Script error: GeneralProperties missing.\n");
       return (false);
     }
 
@@ -23,7 +23,7 @@ bool			rebind_variables(t_program		*prog)
   
   if (!bunny_configuration_bindf(gp, &prog->title, "Title"))
     {
-      fprintf(stderr, "Script error: Game title missing.\n");
+      error("Script error: Game title missing.\n");
       return (false);
     }
 
@@ -31,6 +31,9 @@ bool			rebind_variables(t_program		*prog)
   bunny_configuration_bindf(gp, &prog->hour, "Hour");
   bunny_configuration_bindf(gp, &prog->minute, "Minute");
   bunny_configuration_bindf(gp, &prog->second, "Second");
+
+  prog->language = NULL;
+  bunny_configuration_getf(prog->configuration, &prog->language, "GeneralProperties.Language");
   
   return (true);
 }
