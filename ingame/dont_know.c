@@ -41,6 +41,6 @@ int			ingame_dont_know(t_program	*program,
 	  }
       }
   printfall(program, str, action);
-  printfall(program, "\n\n");
+  printfall(program, "\n");
   return (0);
 }

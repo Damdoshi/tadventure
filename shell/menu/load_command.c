@@ -64,21 +64,12 @@ bool			shell_menu_load_command(t_program		*prog,
   char			buffer[1024];
   const char		*first = p[0];
 
-  // On recharge la conf originale qu'on enrichira de la conf sauvegardée.
-  // On cas ou, a terme, on ai une sauvegarde qui élimine les éléments
-  // deja présent dans une référence (c'est pas le cas actuellement)
-  bunny_delete_configuration(prog->configuration);
-  prog->configuration = NULL;
-  /*
-  if (load_game(prog) == false)
-    return (false);
-  */
   if (first == NULL)
     {
       // Chargement du fichier le plus recent
       if (retrieve_file(-1, &buffer[0], sizeof(buffer)) == 0)
 	{
-	  printfall(prog, "No save file found.\n");
+	  printfall(prog, "%s.\n", getl(prog, "No save file found", "NoSaveFileFound"));
 	  return (true);
 	}
     }
@@ -86,7 +77,7 @@ bool			shell_menu_load_command(t_program		*prog,
     {
       if (p[1] != NULL)
 	{
-	  printfall(prog, "Too many parameters.\n");
+	  printfall(prog, "%s.\n", getl(prog, "Too many parameters.", "TooManyParameters"));
 	  return (true);
 	}
       if (isdigit(*first))
@@ -96,7 +87,13 @@ bool			shell_menu_load_command(t_program		*prog,
 
 	  if (retrieve_file(ret, &buffer[0], sizeof(buffer)) == 0)
 	    {
-	      printfall(prog, "Save file %d not found.\n", ret);
+	      first = getl(prog, "Save file %d not found.\n", "SaveFileNotFound");
+	      if ((first = strstr(first, "%d")) == NULL || strstr(&first[1], "%d") != NULL)
+		{
+		  error("Invalid SaveFileNotFound field in tadventure configuration. A single %%d expected.\n");
+		  return (false);
+		}
+	      printfall(prog, first, ret);
 	      return (true);
 	    }
 	}
@@ -105,14 +102,18 @@ bool			shell_menu_load_command(t_program		*prog,
 	snprintf(buffer, sizeof(buffer), "save/%s.dab", first);
     }
 
-  printfall(prog, "Loading %s... ", buffer);
+  printfall(prog, "%s %s... ", getl(prog, "Loading", "Loading"), &buffer[5]);
+  bunny_delete_configuration(prog->configuration);
+  prog->configuration = NULL;
   if (!(prog->configuration = bunny_open_configuration(buffer, prog->configuration)))
     {
       bunny_perror("");
       return (true); // On ne quitte pas. C'est peut etre une erreur utilisateur.
     }
   rebind_variables(prog);
-  printfall(prog, "Done\n");
+  printfall(prog, "%s\n\n", getl(prog, "Done", "Done"));
+  shell_separator(prog, '`');
+  printfall(prog, "\n");
   prog->klondike = KINGAME;
   gettimeofday(&prog->before, NULL);
   if (shell_ingame_look_command(prog, NULL) == false)

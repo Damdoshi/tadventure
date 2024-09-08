@@ -26,9 +26,61 @@ randint():integer = [Function
 ]
 
 [FR
+  Y = "o"
+  N = "n"
+  Bye = "Salut"
   Day = "Jour"
+  MenuOptionsAre = "Les options du menu sont"
+  GameOptionsMessage = "N'importe quand durant la partie, vous pouvez utiliser les commandes suivantes"
+  AmountOfSaveFileFound = "Nombre de sauvegardes trouvées"
+  NoSaveFileFound = "Aucun jeu sauvegardé n'a été trouvé."
+  TooManyParameters = "Trop de paramètres ont été transmis."
+  SaveFileNotFound = "La sauvegarde %d n'a pas été trouvée.\n"
+  Loading = "Chargement de"
+  Done = "Terminé"
+  NoItemInInventory = "Vous n'avez aucun objet dans votre inventaire"
+  SaveBeforeLeaving = "Sauvegarder avant de quitter? (Y|n)? "
+  PleaseEnterSaveName = "Veuillez entrer un nom de sauvegarde (Laissez vide pour \"lastsave\")"
+  Play = "jouer", "commencer une nouvelle partie"
+  List = "lister", "voir les jeux sauvegardés"
+  Help = "aide", "afficher cette aide"
+  Load = "charger", "[fichier|numéro]?", "charger le jeu demandé ou le dernier si aucun n'est précisé"
+  Exit = "quitter", "quitter le programme"
+  Save = "sauver", "[fichier]?", "enregistre la partie avec le nom précisé, ou la date si aucun n'est donné"
+  Menu = "menu", "revenir au menu"
+  Inventory = "inventaire", "voir les objets dans l'inventaire"
+  Look = "regarder", "observer les lieux, un objet ou une personne"
+  IDontSee =
+    "Je ne vois pas ce que je suis censé regarder...",
+    "Je ne vois pas où est ce que je dois voir..."
 ]
 
 [EN
   Day
+  Y = "y"
+  N = "n"
+  Bye = "Salut"
+  MenuOptionsAre = "Menu options are"
+  GameOptionsMessage = "Anywhere during your game, you can use the following commands"
+  AmountOfSaveFileFound = "Amount of save file found"
+  NoSaveFileFound = "No save file found.\n"
+  SaveFileNotFound = "Save file %d not found.\n"
+  Loading = "Loading"
+  Done = "Done"
+  NoItemInInventory = "You do not have any item in your inventory"
+  SaveBeforeLeaving = "Save before leaving (Y|n)? "
+  PleaseEnterSaveName = "Please enter a name (empty for lastsave)"
+  Play = "play", "start a new game"
+  List = "list", "see saved games"
+  Help = "help", "print this helper"
+  Load = "load", "[file|number]?", "load sent saved game, or the last one if none is precised"
+  Exit = "exit", "exit program"
+  Save = "save", "[file]?", "save your game, use date if no name is given"
+  Menu = "menu", "to go back to menu"
+  Inventory = "inventory", "list items in inventory"
+  Look = "look", "observe the place, an object or somebody"
+  IDontSee =
+    "I don't see what I'm supposed to look at...",
+    "I don't understand what I'm supposed to look..."
 ]
+

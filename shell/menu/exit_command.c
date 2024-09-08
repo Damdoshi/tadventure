@@ -12,7 +12,7 @@ bool		shell_menu_exit_command(t_program		*prog,
 					const char * const	*p)
 {
   (void)p;
-  printfall(prog, "Bye.\n");
+  printfall(prog, "%s.\n", getl(prog, "Bye", "Bye"));
   prog->klondike = KLAST;
   return (true);
 }

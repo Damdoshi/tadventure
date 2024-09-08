@@ -6,13 +6,16 @@
 ** TAdventure
 */
 
+#include			<ctype.h>
 #include			<limits.h>
 #include			"tadventure.h"
 #include			"shell.h"
 
 bool				shell_menu(t_program		*prog)
 {
-  static const struct
+  char				buffer[4096];
+  static bool			cmd_set;
+  static struct
   {
     const char			*command;
     bool			(*func)(t_program		*prog,
@@ -25,7 +28,20 @@ bool				shell_menu(t_program		*prog)
       {"load", shell_menu_load_command},
       {"help", shell_menu_help_command}
     };
-  char			buffer[1024];
+  if (!cmd_set)
+    {      
+      for (size_t i = 0; i < NBRCELL(commands); ++i)
+	{
+	  strcpy(buffer, commands[i].command);
+	  buffer[0] = toupper(buffer[0]);
+	  if ((commands[i].command = strdup(getl(prog, commands[i].command, "%s[0]", buffer))) == NULL)
+	    {
+	      bunny_perror("strdup");
+	      return (false);
+	    }
+	}
+      cmd_set = true;
+    }
   ssize_t		rd;
   const char		*toks[] = {" ", "\t", "\r", "\v", "\n", NULL};
   const char * const *	split;

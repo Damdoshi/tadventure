@@ -11,8 +11,9 @@
 bool			shell_ingame_save_command(t_program		*prog,
 						  const char * const	*params)
 {
-  if (params == NULL || params[0] == NULL)
+  prog->game_changed = false;
+  if (params == NULL || params[0] == NULL || params[1] == NULL)
     return (save(prog, "lastsave"));
-  return (save(prog, params[0]));
+  return (save(prog, params[1]));
 }
 

@@ -54,6 +54,8 @@ typedef struct			s_program
   struct timeval		before;
   int				elapsed; // Real time. // Binded with conf
   bool				display_clock; // Binded
+  char				yes;
+  char				no;
 
   // Game props
   char				*title; // Binded
@@ -131,5 +133,12 @@ const char			*string(t_program		*prog,
 					...);
 
 int				randint(void);
+
+const char			*getl(t_program			*prog,
+				      const char		*def,
+				      const char		*patt,
+				      ...)
+  __attribute__ ((format (printf, 3, 4)))
+  ;
 
 #endif	/*			__TADVENTURE_H__		*/

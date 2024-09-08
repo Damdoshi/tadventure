@@ -20,17 +20,17 @@ bool			shell_ingame_menu_command(t_program		*prog,
 
       do
 	{
-	  if (printfall(prog, "Save before leaving (Y|n)? ") == false)
+	  if (printfall(prog, "%s", getl(prog, "Save before leaving (Y|n)? ", "SaveBeforeLeaving")) == false)
 	    return (emergency_save(prog));
 	  writeall(prog);
 	  if ((len = read(0, buffer, sizeof(buffer))) == -1)
 	    return (emergency_save(prog));
 	  buffer[0] = tolower(buffer[0]);
-	  if (buffer[0] == '\n' || buffer[0] == '\r' || buffer[0] == 'y')
+	  if (buffer[0] == '\n' || buffer[0] == '\r' || buffer[0] == prog->yes)
 	    {
 	      do
 		{
-		  printfall(prog, "Please enter a name (empty for lastsave): ");
+		  printfall(prog, "%s: ", getl(prog, "Please enter a name (empty for lastsave): ", "PleaseEnterSaveName"));
 		  writeall(prog);
 		  if ((len = read(0, buffer, sizeof(buffer) - 1)) == -1)
 		    return (emergency_save(prog));
@@ -44,7 +44,7 @@ bool			shell_ingame_menu_command(t_program		*prog,
 	      while (1);
 	      break ;
 	    }
-	  else if (buffer[0] == 'n')
+	  else if (buffer[0] == prog->no)
 	    break ;
 	}
       while (1);

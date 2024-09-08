@@ -64,7 +64,9 @@ int			_shell_menu_list_command(t_program		*prog,
     printfall(prog, "\n");
  Conclude:
   if (dry != -1)
-    printfall(prog, "Amount of save file found: %u.\n", cnt);
+    printfall(prog, "%s: %u.\n",
+	      getl(prog, "Amount of save file found", "AmountOfSaveFileFound"), cnt
+	      );
   return (cnt);
 }
 

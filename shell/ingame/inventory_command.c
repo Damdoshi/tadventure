@@ -26,12 +26,16 @@ bool		shell_ingame_inventory_command(t_program		*prog,
 	{
 	  bunny_configuration_getf(cnf, &name, "Name");
 	  printfall(prog, "- %s", name);
-	  if (bunny_configuration_getf(cnf, &desc, "Description"))
+	  if (bunny_configuration_getf(cnf, &desc, "Description[0]"))
 	    printfall(prog, ": %s.\n", desc);
 	}
     }
   if (i == 0)
-    printfall(prog, "You do not have any item in your inventory.\n");
+    printfall(prog, "%s.\n",
+	      getl(prog,
+		   "You do not have any item in your inventory",
+		   "NoItemInInventory"
+		   ));
   printfall(prog, "\n");
   return (true);
 }

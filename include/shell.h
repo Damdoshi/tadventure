@@ -74,6 +74,8 @@ t_shell_menu_command
   shell_ingame_menu_command,
   shell_ingame_save_command,
   shell_ingame_look_command,
+  shell_ingame_time_command,
+  shell_ingame_debug_command,
   shell_ingame_inventory_command
   ;
   

@@ -68,7 +68,7 @@
     [Actions
       [Smoke
         Command = "fumer"
-        Condition(int c, node v) = "Cigarette" in CurrentPlayer->Inventory
+        Condition(int c, node v) = "Cigarette" in CurrentCharacter->Inventory
         Failed(int c, node v) = [Function
           "J'en ai plus une seule à griller."
         ]
@@ -79,9 +79,9 @@
             "Celle-là, je l'attendais..."
           EndIf
           CurrentCharacter->Addiction = 0
-          CurrentPlayer->Inventory.Cigarette -= 1
-          If CurrentPlayer->Inventory.Cigarette > 0
-            "J'en ai encore ", CurrentPlayer->Inventory.Cigarette, " pour plus tard."
+          CurrentCharacter->Inventory.Cigarette -= 1
+          If CurrentCharacter->Inventory.Cigarette > 0
+            "J'en ai encore ", CurrentCharacter->Inventory.Cigarette, " pour plus tard."
           Else
             "C'était la dernière."
           EndIf
@@ -105,7 +105,6 @@ CurrentCharacter = AddressOf([].Characters.Jacques)
 GlobalTimePass(int v) = [Function
   integer tmp
 
-  [].CurrentCharacter = ""
   With [].GeneralProperties
     Second += v * 10
     If Second >= 60
@@ -131,7 +130,7 @@ GlobalTimePass(int v) = [Function
   [AllRoomsAction
     [Sing
       Command = "chantonner"
-      Condition(int c, node v) = CurrentPlayer->Anger == 0
+      Condition(int c, node v) = CurrentCharacter->Anger == 0
       Failed(int c, node v) = [Function
         "Je suis vraiment pas d'humeur à ça."
       ]
@@ -187,34 +186,38 @@ GlobalTimePass(int v) = [Function
       [].GlobalTimePass(v)
     ]
     Door = false
-    Description = [Text($,Text)
+    Description() = [Text($,Text)
       La salle d'attente. La porte mène à la salle de tir.
+      Moi, *=$(CurrentCharacter->Name)=*, je vais y aller.
       La porte est $([#SalleAttente].Door ? "ouverte" : "fermée").
     Text]
     [Actions
       [Open
         Command = "ouvrir"
         Target = "porte"
-        Condition(int c, node v) = c > 0 && v[0] in Target
+        Description() = "La porte menant à la salle de tir. Elle est " # ([#SalleAttente].Door ? "ouverte" : "fermée") # "."
+        Condition(int c, node v) = c > 0 && v[0] == Target || v[0] in Target
         Failed(int c, node v) = Print("Ouvrir *quoi*?!")
         Passed(int c, node v) = [Function
           If [#SalleAttente].Door
             "La porte est déjà ouverte."
           Else
             [#SalleAttente].Door = true
+            "J'ouvre la porte. La porte est ", [#SalleAttente].Door
           EndIf
         ]
       ]
       [Close
         Command = "fermer"
         Target = "porte"
-        Condition(int c, node v) = c > 0 && v[0] in Target
+        Condition(int c, node v) = c > 0 && v[0] == Target || v[0] in Target
         Failed(int c, node v) = Print("Fermer *quoi*?!")
         Passed(int c, node v) = [Function
           If [#SalleAttente].Door == false
             "La porte est déjà fermée."
           Else
             [#SalleAttente].Door = false
+            "Je ferme la porte. La porte est ", [#SalleAttente].Door
           EndIf
         ]
       ]

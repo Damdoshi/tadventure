@@ -23,6 +23,7 @@ static int		specific_action(t_program		*program,
       int		j;
       int		ret;
 
+      ret = 0;
       if (!bunny_configuration_getf(action, NULL, "Command[0]"))
 	{
 	  error("Script error: Command field is missing in action %s.\n",
@@ -70,23 +71,28 @@ int			ingame_handle_action(t_program		*program,
 	return (i);
     }
 
+  // prog->game_changed = true;
+  
   // Puis les actions du personnage
   if (bunny_configuration_getf(program->configuration, &action, "CurrentCharacter->Actions"))
     if ((i = specific_action(program, argc, argv, action)) != 0)
-      return (i);
+      goto ActionDone;
 
   // Puis l'action de la salle
   if (bunny_configuration_getf(program->configuration, &action, "CurrentCharacter->Room->Actions"))
     if ((i = specific_action(program, argc, argv, action)) != 0)
-      return (i);
+      goto ActionDone;
 
   // Puis toutes les salles
   if (bunny_configuration_getf(program->configuration, &action, "Rooms.AllRoomsAction"))
     if ((i = specific_action(program, argc, argv, action)) != 0)
-      return (i);
+      goto ActionDone;
   
   if (ingame_dont_know(program, argv[0]) == -1)
     return (-1);
   return (1);
+ ActionDone:
+  program->game_changed = true;
+  return (i);
 }
 

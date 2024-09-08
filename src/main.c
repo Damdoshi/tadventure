@@ -6,6 +6,7 @@
 ** TAdventure
 */
 
+#include		<ctype.h>
 #include		<signal.h>
 #include		"tadventure.h"
 
@@ -72,6 +73,13 @@ int			main(int		argc,
     }
   else
     program.display_mode = DSHELL;
+
+  program.yes = 'y';
+  if (bunny_configuration_getf(program.configuration, &str, "%s.Y", program.language))
+    program.yes = tolower(str[0]);
+  program.no = 'n';
+  if (bunny_configuration_getf(program.configuration, &str, "%s.N", program.language))
+    program.no = tolower(str[0]);
   
   int		ret;
 

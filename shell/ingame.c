@@ -6,19 +6,22 @@
 ** TAdventure
 */
 
-#include		"shell.h"
+#include			<ctype.h>
+#include			"shell.h"
 
-size_t			wtlen(const char * const	*wt)
+size_t				wtlen(const char * const	*wt)
 {
-  size_t		i;
+  size_t			i;
 
   for (i = 0; wt[i] != NULL; ++i);
   return (i);
 }
 
-bool			shell_ingame(t_program		*prog)
+bool				shell_ingame(t_program		*prog)
 {
-  static const struct
+  char				buffer[4096];
+  static bool			cmd_set;
+  static struct
   {
     const char			*command;
     bool			(*func)(t_program		*prog,
@@ -28,9 +31,24 @@ bool			shell_ingame(t_program		*prog)
       {"menu", shell_ingame_menu_command},
       {"save", shell_ingame_save_command},
       {"look", shell_ingame_look_command},
-      {"inventory", shell_ingame_inventory_command}
+      {"inventory", shell_ingame_inventory_command},
+      {"debug", shell_ingame_debug_command},
+      {"time", shell_ingame_time_command}
     };
-  char			buffer[1024];
+  if (!cmd_set)
+    {
+      for (size_t i = 0; i < NBRCELL(commands); ++i)
+	{
+	  strcpy(buffer, commands[i].command);
+	  buffer[0] = toupper(buffer[0]);
+	  if ((commands[i].command = strdup(getl(prog, commands[i].command, "%s[0]", buffer))) == NULL)
+	    {
+	      bunny_perror("strdup");
+	      return (false);
+	    }
+	}
+      cmd_set = true;
+    }
   const char		*toks[] = {" ", "\t", "\r", "\v", "\n", NULL};
   const char * const *	split;
   int			ret;
@@ -69,7 +87,6 @@ bool			shell_ingame(t_program		*prog)
 	bunny_delete_split(split);
 	return (ret);
       }
-  prog->game_changed = true;
   ret = ingame_handle_action(prog, wtlen(split), split);
   bunny_delete_split(split);
   if (ret == -1)
